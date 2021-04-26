@@ -36,7 +36,7 @@ public class Tree_Generator : MonoBehaviour {
     private int trianglesOffset = 0;
     
     private List<float> angle = new List<float>();
-    private float iniAngle = 25.0f;
+    private float iniAngle = 15.0f;
     
     
     private List<Vector3> segmentPos = new List<Vector3>();
@@ -153,7 +153,7 @@ public class Tree_Generator : MonoBehaviour {
 	    	).normalized;
 	    //	}	
 	        angle[currentBranchId] = 0f;
-			iniAngle = Random.Range(3f,9f)/segLength*((iniAngle+0.001f)/Mathf.Abs((iniAngle+0.001f)));
+			iniAngle = Random.Range(3f,7f)/segLength*((iniAngle+0.001f)/Mathf.Abs((iniAngle+0.001f)));
 			
 			if(branchingOrder[currentBranchId] == 3){
 				print(segmentLocRotVect[currentBranchId]);
