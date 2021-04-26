@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class LSystems : MonoBehaviour {
+public class Tree_Generator : MonoBehaviour {
     
     private List<int> numberSegments = new List<int>();
     
