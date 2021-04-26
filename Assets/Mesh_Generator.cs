@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 [RequireComponent(typeof(MeshFilter))]
@@ -13,6 +14,7 @@ public class Mesh_Generator : MonoBehaviour
 {
 
     Mesh mesh;
+    Material landMaterial;
 
     Vector3[] vertices;
     int[] triangles;
@@ -24,14 +26,24 @@ public class Mesh_Generator : MonoBehaviour
     //This zooms out. A smaller number = more spread out geometry
     public float perlinZoomFactor = .05f;
 
+
     //A good baseline for these variables ^^^ I've found is xSize = 200, zSize = 200, perlinScaleFactor = 20f, perlinZoomFactor = 0.05f
+
+
+
 
 
     // Start is called before the first frame update
     void Start()
     {
+        public int seed = Random.Range(-100000,100000);
+        public int xOffset, zOffset = seed;
+
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+
+        landMaterial = Resources.Load<Material>("Land_Material");
+        GetComponent<MeshRenderer>().material = landMaterial;
         
         CreateShape();
         UpdateMesh();
@@ -46,15 +58,13 @@ public class Mesh_Generator : MonoBehaviour
             for(int x = 0; x <= xSize; x++)
             {
 
-                float y = Mathf.PerlinNoise(x * perlinZoomFactor , z * perlinZoomFactor) * perlinScaleFactor;
+                float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + zOffset) * perlinZoomFactor) * perlinScaleFactor;
 
                
                 
                 Vector3 center = new Vector3(xSize / 2, .5f, zSize / 2);
                 Vector3 point = new Vector3(x, y, z);
                 float distance = Mathf.Abs(Vector3.Distance(center, point));
-
-
                 float twoPi = Mathf.PI * 2;
                 float t = 0;
                 float phase = 0;
@@ -62,19 +72,15 @@ public class Mesh_Generator : MonoBehaviour
                 float noiseMax = 0;
                 float islandRadius = 50f;
 
-
-
                 List<Vector3> verticesInIsland = new List<Vector3>();
 
+                //make wobbly circle
                 for (float angle = 0; angle < twoPi; angle +=  0.1f)
                 {
-                    //float xOffset = Mathf.Cos(angle);
-                    //float yOffset = Mathf.Sin(angle);
-
-                    float xOffset = scale(Mathf.Cos(angle + phase), -1, 1, 0, noiseMax);
-                    float yOffset = scale(Mathf.Sin(angle + phase), -1, 1, 0, noiseMax);
+                    float circleXOffset = scale(Mathf.Cos(angle + phase), -1, 1, 0, noiseMax);
+                    float circleYOffset = scale(Mathf.Sin(angle + phase), -1, 1, 0, noiseMax);
                     
-                    float noise = Mathf.PerlinNoise(xOffset, yOffset);
+                    float noise = Mathf.PerlinNoise(circleXOffset, circleYOffset);
                     float radius = scale(0f, 1f, 50f, 100f, noise);
                     float newX = radius * Mathf.Cos(angle);
                     float newY = radius * Mathf.Sin(angle);
@@ -84,61 +90,11 @@ public class Mesh_Generator : MonoBehaviour
                     Vector3 pointInCircle = new Vector3(newX, newY, z);
 
                     float distance2 = Mathf.Abs(Vector3.Distance(point, pointInCircle));
-                    /*if (distance < 10f)
-                    {
-                        y *= .2f;
-                    }*/
-
-
-                    
 
                     t += .1f;
                 }
 
                 phase += 0.003f;
-
-              
-
-                /*if (distance > 60)
-                {
-                    float chance = UnityEngine.Random.Range(0f, .6f);
-                    //if (chance > 0f)
-                    //{
-                        y *= chance;
-                    //}
-                }
-
-                if (distance > 80)
-                {
-                    float chance = UnityEngine.Random.Range(.2f, .5f);
-                    if (chance > 0f)
-                    {
-                        y *= chance;
-                    }
-                }
-
-
-                if (distance > 100)
-                  {
-                    float chance = UnityEngine.Random.Range(.5f, .9f);
-                    if (chance > 0f)
-                    {
-                        y *= chance;
-                    }
-                }
-
-            
-
-
-
-                for (int k = 0; k < verticesInIsland.Count; k++)
-                {
-                    if (verticesInIsland.Contains(new Vector3(x,y,z)))
-                    {
-                        y *= .3f;
-                    }
-                }*/
-
 
                 if (distance > islandRadius)
                 {
