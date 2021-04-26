@@ -29,6 +29,7 @@ public class Mesh_Generator : MonoBehaviour
 
     //A good baseline for these variables ^^^ I've found is xSize = 200, zSize = 200, perlinScaleFactor = 20f, perlinZoomFactor = 0.05f
 
+    float islandRadius = 50f;
 
 
 
@@ -47,6 +48,17 @@ public class Mesh_Generator : MonoBehaviour
         
         CreateShape();
         UpdateMesh();
+
+        ///
+            //PUT L-SYSTEM CALLS HERE
+                //Have like 10-ish trees within the bounds of the island (island radius from the center --> xSize/2 & zSize/2)
+
+            //can get the y values of the terrain from mesh.vertices
+            //mesh.vertices is a 1D array (% by xSize to get the z coordinate)
+
+        ///
+
+
     }
 
     //creates the mesh
@@ -70,7 +82,6 @@ public class Mesh_Generator : MonoBehaviour
                 float phase = 0;
                 //noise max?
                 float noiseMax = 0;
-                float islandRadius = 50f;
 
                 List<Vector3> verticesInIsland = new List<Vector3>();
 
@@ -158,7 +169,7 @@ public class Mesh_Generator : MonoBehaviour
 
 
 
-    //draws verticies of the tris
+    //draws vertices of the tris
     // private void OnDrawGizmos()
     // {
     //     if(vertices == null)
