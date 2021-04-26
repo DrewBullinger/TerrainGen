@@ -19,7 +19,7 @@ public class Mesh_Generator : MonoBehaviour
 
     public int xSize = 200;
     public int zSize = 200;
-    public float perlinScaleFactor = 20f;
+    public float perlinScaleFactor = 25f;
 
     //This zooms out. A smaller number = more spread out geometry
     public float perlinZoomFactor = .05f;
@@ -50,7 +50,7 @@ public class Mesh_Generator : MonoBehaviour
 
                
                 
-                Vector3 center = new Vector3(100f, .5f, 100f);
+                Vector3 center = new Vector3(xSize / 2, .5f, zSize / 2);
                 Vector3 point = new Vector3(x, y, z);
                 float distance = Mathf.Abs(Vector3.Distance(center, point));
 
@@ -60,6 +60,9 @@ public class Mesh_Generator : MonoBehaviour
                 float phase = 0;
                 //noise max?
                 float noiseMax = 0;
+                float islandRadius = 50f;
+
+
 
                 List<Vector3> verticesInIsland = new List<Vector3>();
 
@@ -81,11 +84,13 @@ public class Mesh_Generator : MonoBehaviour
                     Vector3 pointInCircle = new Vector3(newX, newY, z);
 
                     float distance2 = Mathf.Abs(Vector3.Distance(point, pointInCircle));
-                    if (distance < 10f)
+                    /*if (distance < 10f)
                     {
                         y *= .2f;
-                    }
+                    }*/
 
+
+                    
 
                     t += .1f;
                 }
@@ -122,6 +127,8 @@ public class Mesh_Generator : MonoBehaviour
                     }
                 }
 
+            
+
 
 
                 for (int k = 0; k < verticesInIsland.Count; k++)
@@ -131,6 +138,12 @@ public class Mesh_Generator : MonoBehaviour
                         y *= .3f;
                     }
                 }*/
+
+
+                if (distance > islandRadius)
+                {
+                    y *= scale(islandRadius, 100f, 1f, .01f, distance);
+                }
 
                 vertices[i] = new Vector3(x, y, z);
 
