@@ -103,7 +103,7 @@ public class Tree_Generator : MonoBehaviour {
 	    													
 	    	).normalized;
 	    
-		for(int j=1;j<numberSegments[currentBranchId];j++){
+		for(int j = 1; j < numberSegments[currentBranchId]; j++){
 		  /*  rotVect = Vector3.Cross
 	    	(
 	    		(segmentLocRotVect[currentBranchId]), 
@@ -112,7 +112,7 @@ public class Tree_Generator : MonoBehaviour {
 	    	).normalized;*/
 	    //    print(rotVect);
 		    
-		    angle[currentBranchId] = angle[currentBranchId]+iniAngle;
+		    angle[currentBranchId] = angle[currentBranchId] + iniAngle;
 		    segmentRot[currentBranchId] = Quaternion.AngleAxis( angle[currentBranchId], rotVect);
 		    
 			segmentPos[currentBranchId] = segmentPos[currentBranchId]+(segmentRot[currentBranchId]*iniPos);
@@ -192,7 +192,6 @@ public class Tree_Generator : MonoBehaviour {
 			for(int j=1;j<numberSegments[currentBranchId];j++){
 		
 		        angle[currentBranchId] = angle[currentBranchId]+iniAngle;
-			//	angle[currentBranchId] = angle[currentBranchId]+iniAngle;
 				segmentRot[currentBranchId] = Quaternion.AngleAxis( angle[currentBranchId], rotVect );
 			
 				segmentPos[currentBranchId] = segmentPos[currentBranchId]+(segmentRot[currentBranchId]*iniPos);
@@ -200,7 +199,7 @@ public class Tree_Generator : MonoBehaviour {
 			
 				curTopRadius[currentBranchId] = segBottomRadius-(segBottomRadius-segTopRadius)*(j+1)/numberSegments[currentBranchId];
 		
-			    				branchPosibility = branchPosibility-0.1f;
+			    branchPosibility = branchPosibility-0.1f;
 				if((j>2)&&(Random.Range(0f,1f)>branchPosibility)){
 					AddBranch();
 					numberSegments.Add(numberSegments[currentBranchId]-j);
@@ -209,30 +208,15 @@ public class Tree_Generator : MonoBehaviour {
 			
 				DrawCone();
 		
-		
 				for(int i=minVertex[currentSegmentId-1];i<maxVertex[currentSegmentId-1];i++){
 					if(topVertices[i]==1){
 						gvertices[i]=gvertices[i-currentSegmentOffset-1];
 					}
 				}
-				
-
-			
 			}
 			nBranchesToAdd--;
 		}
-		
-
-		
-
-		
-		
-		
-		
-	}
-	
-	
-	
+	}	
 	
 	void AddBranch(){
 	    inhSegId.Add(currentSegmentId);
@@ -253,18 +237,9 @@ public class Tree_Generator : MonoBehaviour {
 		branchingOrder.Add(branchingOrder[currentBranchId]+1);
 		
 //		print(segmentPos[currentBranchId]);
-		
-		
 	}
-	
-	
-	
-	
-	
 	void DrawCone(){
-	
 
- 
 	int useBottomCap = 0;
 	int useTopCap = 0; 
  
@@ -272,21 +247,11 @@ public class Tree_Generator : MonoBehaviour {
 	float bottomRadius = curBotRadius[currentBranchId];
 	float topRadius = curTopRadius[currentBranchId];
 
-
- 
 	int nbVerticesCap = nbSides + 1;
 	
 	
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-/////////////////////////////////////////////     Vertices     //////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-//	#region Vertices
- 
-
-
+//Vertices
 	int NN = nbVerticesCap + nbVerticesCap + nbSides * 2 + 2;
-	
 	
 	int[] vUsed = new int[NN];
 	int[] isTopVertice = new int[NN];
@@ -298,12 +263,10 @@ public class Tree_Generator : MonoBehaviour {
 		isTopVertice[ii] = 0;
 	}
 
- 
 	// bottom + top + sides
 	Vector3[] vertices = new Vector3[nbVerticesCap + nbVerticesCap + nbSides * 2 + 2];
 	int vert = 0;
 	float _2pi = Mathf.PI * 2f;
- 
  
 	// Bottom cap
 	if(useBottomCap == 1){
@@ -338,8 +301,6 @@ public class Tree_Generator : MonoBehaviour {
 		}
 	}
 
-
- 
 	vert = nbSides * 2 + 2; 
 	// Sides
 	int v = 0;
@@ -379,7 +340,7 @@ public class Tree_Generator : MonoBehaviour {
 		}
 	}
 	segmentLocRotVect[currentBranchId] = (segmentRot[currentBranchId]*(new Vector3(0f, 1f, 0f) - new Vector3(0f, 0f, 0f))).normalized;
-//	print(segmentRot[currentBranchId]*(new Vector3(0f, 1f, 0f) - new Vector3(0f, 0f, 0f)));
+	//print(segmentRot[currentBranchId]*(new Vector3(0f, 1f, 0f) - new Vector3(0f, 0f, 0f)));
 	jj = 0;
 	for(int ii=0;ii<NN;ii++){
 	    if(vUsed[ii] == 1){
@@ -394,24 +355,11 @@ public class Tree_Generator : MonoBehaviour {
 			jj++;
 		}
 	}
-
-
-//	#endregion
  
- 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////    Normales    /////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////// 
- 
- 
- 
-//	#region Normales
- 
+//Normales
 	// bottom + top + sides
-
 	Vector3[] normalesA = new Vector3[verticesA.Length];
 	Vector3[] normales = new Vector3[vertices.Length];
-	
 	
     numUsed=0;
 	vert = 0;
@@ -444,11 +392,8 @@ public class Tree_Generator : MonoBehaviour {
 			vert++;
 		}
 	}
-
- 
   
 	// Sides
-
 	vert = nbSides * 2 + 2;
 	v = 0;
 	while (vert <= vertices.Length - 4 )
@@ -471,9 +416,7 @@ public class Tree_Generator : MonoBehaviour {
 	normales[vert + 1] = normales[nbSides * 2 + 3 ];
 	vUsed[vert] = 1;
 	vUsed[vert+1] = 1;
-    
 
-    
     jj=0;
 	for(int ii=0;ii<NN;ii++){
 	    if(vUsed[ii] == 1){
@@ -482,15 +425,8 @@ public class Tree_Generator : MonoBehaviour {
 			jj++;
 		}
 	}
-
-//	#endregion
  
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////     UVs      //////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////// 
- 
- 
-//	#region UVs
+//UVs
 	Vector2[] uvsA = new Vector2[verticesA.Length];
 	Vector2[] uvs = new Vector2[vertices.Length];
  
@@ -536,8 +472,6 @@ public class Tree_Generator : MonoBehaviour {
 			u++;
 		}
 	}
-
- 
 	u = nbSides * 2 + 2;  
  
 	// Sides
@@ -567,27 +501,18 @@ public class Tree_Generator : MonoBehaviour {
 			jj++;
 		}
 	}
-
-//	#endregion 
  
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////     Triangles      ///////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////// 
- 
- 
-//	#region Triangles
+//Triangles
 	int nbTriangles = nbSides + nbSides + nbSides*2;
 	int[] triangles = new int[nbTriangles * 3 + 3];
 
 	int NT = nbTriangles * 3 + 3;
-	
 
 	int[] tUsed = new int[NT];
 	
 	for(int ii=0;ii<NT;ii++){
 		tUsed[ii] = 0;
 	}
- 
 
     numUsed=0;
 	// Bottom cap
@@ -595,7 +520,6 @@ public class Tree_Generator : MonoBehaviour {
 	int i = 0;
 	
 	int missTris = 0;
-
 	
 	if(useBottomCap == 1){
 		while (tri < nbSides - 1)
@@ -613,9 +537,6 @@ public class Tree_Generator : MonoBehaviour {
 			tri++;
 			i += 3;
 		}
-
-
-	
 			triangles[i] = 0;
 			triangles[i + 1] = tri - missTris + 1;
 			triangles[i + 2] = 1;
@@ -626,11 +547,9 @@ public class Tree_Generator : MonoBehaviour {
 		
 			numUsed+=3;
 	
-	
 		tri++;
 		i += 3;
 	}
-    
     
     if(useBottomCap == 1){
         if(useTopCap == 1){
@@ -648,8 +567,7 @@ public class Tree_Generator : MonoBehaviour {
     		missTris = nbSides+1;
     	}
     }
-    
-    
+      
 	tri = nbSides;
 	i = 3*tri;
  
@@ -657,7 +575,6 @@ public class Tree_Generator : MonoBehaviour {
 	if(useTopCap == 1){
 		while (tri < nbSides*2)
 		{
-	
 			triangles[ i ] = tri - missTris + 2;
 			triangles[i + 1] = tri - missTris + 1;
 			triangles[i + 2] = nbVerticesCap - missTris;
@@ -669,8 +586,7 @@ public class Tree_Generator : MonoBehaviour {
 	        numUsed+=3;
 	        
 			tri++;
-			i += 3;
-			
+			i += 3;	
 		}
 
 		triangles[i] = nbVerticesCap - missTris + 1;
@@ -686,8 +602,6 @@ public class Tree_Generator : MonoBehaviour {
 		i += 3;
 		tri++;
 	}
-
-
 	
     if(useBottomCap == 1){
         if(useTopCap == 1){
@@ -708,7 +622,6 @@ public class Tree_Generator : MonoBehaviour {
     
 	tri = nbSides*2+2;
 	i = 3*tri-3;
-
     
 	// Sides
 	while( tri <= nbTriangles )
@@ -749,9 +662,6 @@ public class Tree_Generator : MonoBehaviour {
 		}
 	}
 	
-	
-	
-	
 	jj = 0;
 	minVertex.Add(verticesOffset);
 	for(int ii=0;ii<NN;ii++){
@@ -765,8 +675,6 @@ public class Tree_Generator : MonoBehaviour {
 	verticesOffset = verticesOffset+jj;
 	currentSegmentOffset = jj;
 	
-
-	
 	minTriangle.Add(trianglesOffset);
 	jj = 0;
 	for(int ii=0;ii<NT;ii++){
@@ -775,29 +683,14 @@ public class Tree_Generator : MonoBehaviour {
 			jj++;
 		}
 	}
-//	print(jj);
+	//print(jj);
 	maxTriangle.Add(trianglesOffset+jj);
 	trianglesOffset = trianglesOffset+jj;
 	
-	
 	currentSegmentId++;
-
-
-//	#endregion
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
- 
-
-
-	
 	}
 	
 	void CreateMesh(){
-	
 	        if(gvertices.Count>40000){
             int tempCount = 40000;
         	while((tempCount % (nbSides * 2+2))!=0){
@@ -807,8 +700,6 @@ public class Tree_Generator : MonoBehaviour {
        // 	print(gvertices.Count/tempCount+1);
         	
        // 	int splitCount = 
-        	
-        	
         	List<List<Vector3>> ggvertices = new List<List<Vector3>>();
 			List<List<Vector3>> ggnormales = new List<List<Vector3>>();
 			List<List<Vector2>> gguvs = new List<List<Vector2>>();
@@ -816,7 +707,7 @@ public class Tree_Generator : MonoBehaviour {
 			
 			int maxj = gvertices.Count/tempCount+1;
 			for(int j=0;j<maxj;j++){
-		//	    print(j);
+				//print(j);
 				ggvertices.Add(new List<Vector3>());
 				ggnormales.Add(new List<Vector3>());
 				gguvs.Add(new List<Vector2>());
@@ -844,14 +735,12 @@ public class Tree_Generator : MonoBehaviour {
 			
 				for(int i=minTri; i<maxTri; i++){
 					ggtriangles[j].Add(gtriangles[i]-mini);
-				
 				}
 			
 				GameObject plane = new GameObject("Plane");
 				MeshFilter filter = plane.AddComponent<MeshFilter>();
 				Mesh mesh = filter.mesh;
 				mesh.Clear();
-			
 			
 				mesh.vertices = ggvertices[j].ToArray();
 				mesh.normals = ggnormales[j].ToArray();
@@ -896,6 +785,4 @@ public class Tree_Generator : MonoBehaviour {
 			
 		}
 	}
-	
-	
 }
