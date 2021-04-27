@@ -777,7 +777,7 @@ public class Tree_Generator : MonoBehaviour {
 			
 			MeshRenderer renderer = plane.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
 			renderer.material.shader = Shader.Find ("Diffuse");
-			Texture2D tex = new Texture2D(1, 1);
+			Texture2D tex = new Texture2D(1, 50);
 			tex.SetPixel(0, 0, Color.green);
 			tex.Apply();
 			renderer.material.mainTexture = tex;
