@@ -22,7 +22,7 @@ public class Mesh_Generator : MonoBehaviour
 
     public int xSize = 200;
     public int zSize = 200;
-    public float perlinScaleFactor = 25f;
+    public float perlinScaleFactor = 29f;
 
     //This zooms out. A smaller number = more spread out geometry
     public float perlinZoomFactor = .05f;
