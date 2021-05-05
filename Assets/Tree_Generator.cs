@@ -55,13 +55,17 @@ public class Tree_Generator : MonoBehaviour {
     
 	//initialization
 	void Start () {
-		SetupCone();
-		CreateMesh();
+		//MakeTree(0f, 0f, 0f);
 	}
 	
 	//update
 	void Update () {
 	
+	}
+
+	public GameObject MakeTree() {
+		SetupCone();
+		return CreateMesh();
 	}
 	
 	void SetupCone(){
@@ -80,12 +84,12 @@ public class Tree_Generator : MonoBehaviour {
 		
 		branchingOrder.Add(0);
 		
-		Vector3 iniPos = new Vector3(0f,segLength,0f);
+		Vector3 iniPos = new Vector3(0f, segLength, 0f);
 		
-		Vector3 rotVect = new Vector3(0f,0f,1f);
+		Vector3 rotVect = new Vector3(0f, 0f, 0f + 1);
 
-		segmentPos.Add(new Vector3(0f,0f,0f));
-		segmentLocRotVect.Add(new Vector3(0f,1f,0f));
+		segmentPos.Add(new Vector3(0f, 0f, 0f));
+		segmentLocRotVect.Add(new Vector3(0f, 0f+1, 0f));
 		
 	//	segmentRot.Add(Quaternion.AngleAxis( 0.5f*iniAngle, rotVect));
 		segmentRot.Add(Quaternion.AngleAxis( iniAngle, rotVect));
@@ -99,7 +103,7 @@ public class Tree_Generator : MonoBehaviour {
 		rotVect = Vector3.Cross
 	    	(
 	    		(segmentLocRotVect[currentBranchId]), 
-	    		new Vector3(Random.Range(-1,1f),Random.Range(-1,1f),Random.Range(-1,1f))
+	    		new Vector3(Random.Range(0f-1,0f+1f), Random.Range(0f-1,0f+1f), Random.Range(0f-1,0f+1f))
 	    													
 	    	).normalized;
 	    
@@ -143,13 +147,12 @@ public class Tree_Generator : MonoBehaviour {
 
 	    //    if(currentBranchId>0){
 	    
-	        Vector3 randVect = new Vector3(Random.Range(-1,1f),Random.Range(-1,1f),Random.Range(-1,1f));
+	        Vector3 randVect = new Vector3(Random.Range(0f-1,0f+1f), Random.Range(0f-1,0f+1f), Random.Range(0f-1,0f+1f));
 	        
 			rotVect = Vector3.Cross
 	    	(
 	    		segmentLocRotVect[currentBranchId], 
-	    		randVect
-	    													
+	    		randVect											
 	    	).normalized;
 	    //	}	
 	        angle[currentBranchId] = 0f;
@@ -690,8 +693,8 @@ public class Tree_Generator : MonoBehaviour {
 	currentSegmentId++;
 	}
 	
-	void CreateMesh(){
-	        if(gvertices.Count>40000){
+	GameObject CreateMesh(){
+	    if(gvertices.Count>40000){
             int tempCount = 40000;
         	while((tempCount % (nbSides * 2+2))!=0){
         		tempCount--;
@@ -737,7 +740,7 @@ public class Tree_Generator : MonoBehaviour {
 					ggtriangles[j].Add(gtriangles[i]-mini);
 				}
 			
-				GameObject plane = new GameObject("Plane");
+				GameObject plane = new GameObject("Tree");
 				MeshFilter filter = plane.AddComponent<MeshFilter>();
 				Mesh mesh = filter.mesh;
 				mesh.Clear();
@@ -757,12 +760,15 @@ public class Tree_Generator : MonoBehaviour {
 				tex.Apply();
 				renderer.material.mainTexture = tex;
 				renderer.material.color = Color.green;
-			
+				
+				
+				return plane;
 			}
+
         }
 		
 		else{
-			GameObject plane = new GameObject("Plane");
+			GameObject plane = new GameObject("Tree");
 			MeshFilter filter = plane.AddComponent<MeshFilter>();
 			Mesh mesh = filter.mesh;
 			mesh.Clear();
@@ -782,7 +788,11 @@ public class Tree_Generator : MonoBehaviour {
 			tex.Apply();
 			renderer.material.mainTexture = tex;
 			renderer.material.color = Color.green;
+
+			return plane;
 			
 		}
+
+		return null;
 	}
 }
