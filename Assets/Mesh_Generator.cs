@@ -1,35 +1,85 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 [RequireComponent(typeof(MeshFilter))]
 public class Mesh_Generator : MonoBehaviour
 {
+    public GameObject treeObject;
+    public Tree_Generator treeScript;
 
     Mesh mesh;
+    Material landMaterial;
 
     Vector3[] vertices;
     int[] triangles;
 
     public int xSize = 200;
     public int zSize = 200;
-    public float perlinScaleFactor = 20f;
+    public float perlinScaleFactor = 25f;
 
     //This zooms out. A smaller number = more spread out geometry
     public float perlinZoomFactor = .05f;
 
+    public int xOffset, zOffset;
+
+
+
+
     //A good baseline for these variables ^^^ I've found is xSize = 200, zSize = 200, perlinScaleFactor = 20f, perlinZoomFactor = 0.05f
 
+    float islandRadius = 50f;
+
+
+    void Awake() {
+        treeScript = treeObject.GetComponent<Tree_Generator>();
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        //Seed not working yet
+        int seed = Random.Range(-100000,100000);
+        xOffset = seed;
+        zOffset = seed;
+
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+
+        landMaterial = Resources.Load<Material>("Land_Material");
+        GetComponent<MeshRenderer>().material = landMaterial;
         
         CreateShape();
         UpdateMesh();
+
+        ///
+            //PUT L-SYSTEM CALLS HERE
+                //Have like 10-ish trees within the bounds of the island (island radius from the center --> xSize/2 & zSize/2)
+
+            //can get the y values of the terrain from mesh.vertices
+            //mesh.vertices is a 1D array (% by xSize to get the z coordinate)
+
+        GameObject tree1 = treeScript.MakeTree();
+        tree1.transform.localScale -= new Vector3(.5f, .5f, .5f);
+        tree1.transform.Translate(new Vector3(50, 0, 50));
+        // treeScript.MakeTree(); //.transform.localScale -= new Vector3(.5f, .5f, .5f);
+        // treeScript.MakeTree().transform.localScale -= new Vector3(.5f, .5f, .5f);
+
+        //method 2
+        // Instantiate(treeScript, new Vector3(0, 0, 0), Quaternion.identity).transform.Translate(new Vector3(50, 0, 50));
+        // Instantiate(treeScript, new Vector3(25, 0, 75), Quaternion.identity);
+        // Instantiate(treeScript, new Vector3(125, 0, 160), Quaternion.identity);
+
+        
+
+
     }
 
     //creates the mesh
@@ -40,10 +90,51 @@ public class Mesh_Generator : MonoBehaviour
         {
             for(int x = 0; x <= xSize; x++)
             {
+                //float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + zOffset) * perlinZoomFactor) * perlinScaleFactor;
+                float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + xOffset) * perlinZoomFactor) * perlinScaleFactor;
 
-                float y = Mathf.PerlinNoise(x * perlinZoomFactor , z * perlinZoomFactor) * perlinScaleFactor;
+               
+                
+                Vector3 center = new Vector3(xSize / 2, .5f, zSize / 2);
+                Vector3 point = new Vector3(x, y, z);
+                float distance = Mathf.Abs(Vector3.Distance(center, point));
+                float twoPi = Mathf.PI * 2;
+                float t = 0;
+                float phase = 0;
+                //noise max?
+                float noiseMax = 0;
 
-                vertices[i] = new Vector3(x,y,z);
+                List<Vector3> verticesInIsland = new List<Vector3>();
+
+                //make wobbly circle
+                for (float angle = 0; angle < twoPi; angle +=  0.1f)
+                {
+                    float circleXOffset = scale(Mathf.Cos(angle + phase), -1, 1, 0, noiseMax);
+                    float circleYOffset = scale(Mathf.Sin(angle + phase), -1, 1, 0, noiseMax);
+                    
+                    float noise = Mathf.PerlinNoise(circleXOffset, circleYOffset);
+                    float radius = scale(0f, 1f, 50f, 100f, noise);
+                    float newX = radius * Mathf.Cos(angle);
+                    float newY = radius * Mathf.Sin(angle);
+   
+                    verticesInIsland.Add(new Vector3(newX, newY, z));
+
+                    Vector3 pointInCircle = new Vector3(newX, newY, z);
+
+                    float distance2 = Mathf.Abs(Vector3.Distance(point, pointInCircle));
+
+                    t += .1f;
+                }
+
+                phase += 0.003f;
+
+                if (distance > islandRadius)
+                {
+                    y *= scale(islandRadius, 100f, 1f, .01f, distance);
+                }
+
+                vertices[i] = new Vector3(x, y, z);
+
                 i++;
             }
         }
@@ -73,6 +164,18 @@ public class Mesh_Generator : MonoBehaviour
 
     }
 
+
+    public float scale(float OldMin, float OldMax, float NewMin, float NewMax, float OldValue)
+    {
+
+        float OldRange = (OldMax - OldMin);
+        float NewRange = (NewMax - NewMin);
+        float NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin;
+
+        return (NewValue);
+    }
+
+
     //updates the mesh in Unity
     void UpdateMesh()
     {
@@ -82,10 +185,16 @@ public class Mesh_Generator : MonoBehaviour
         mesh.triangles = triangles;
 
         mesh.RecalculateNormals(); 
+
+        mesh.RecalculateBounds();
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        meshCollider.sharedMesh = mesh;
     }
 
 
-    //draws verticies of the tris
+
+
+    //draws vertices of the tris
     // private void OnDrawGizmos()
     // {
     //     if(vertices == null)
