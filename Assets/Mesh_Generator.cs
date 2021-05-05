@@ -20,14 +20,14 @@ public class Mesh_Generator : MonoBehaviour
     Vector3[] vertices;
     int[] triangles;
 
-    public int xSize = 200;
-    public int zSize = 200;
+    public int xSize = 400;
+    public int zSize = 400;
     public float perlinScaleFactor = 29f;
 
     //This zooms out. A smaller number = more spread out geometry
     public float perlinZoomFactor = .05f;
 
-    public int xOffset, zOffset;
+    public int seedOffset;
 
 
 
@@ -46,8 +46,7 @@ public class Mesh_Generator : MonoBehaviour
     {
         //Seed not working yet
         int seed = Random.Range(-100000,100000);
-        xOffset = seed;
-        zOffset = seed;
+        seedOffset = seed;
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
@@ -89,7 +88,7 @@ public class Mesh_Generator : MonoBehaviour
             for(int x = 0; x <= xSize; x++)
             {
                 //float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + zOffset) * perlinZoomFactor) * perlinScaleFactor;
-                float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + xOffset) * perlinZoomFactor) * perlinScaleFactor;
+                float y = Mathf.PerlinNoise((x + seedOffset) * perlinZoomFactor , (z + seedOffset) * perlinZoomFactor) * perlinScaleFactor;
 
                
                 

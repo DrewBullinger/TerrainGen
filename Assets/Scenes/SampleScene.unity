@@ -427,8 +427,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   treeScript: {fileID: 0}
-  xSize: 200
-  zSize: 200
+  xSize: 400
+  zSize: 400
   perlinScaleFactor: 20
   perlinZoomFactor: 0.05
   xOffset: 0
