@@ -12,6 +12,7 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(MeshFilter))]
 public class Mesh_Generator : MonoBehaviour
 {
+    public GameObject treeObject;
     public Tree_Generator treeScript;
 
     Mesh mesh;
@@ -38,7 +39,7 @@ public class Mesh_Generator : MonoBehaviour
 
 
     void Awake() {
-        treeScript = GetComponent<Tree_Generator>();
+        treeScript = treeObject.GetComponent<Tree_Generator>();
     }
 
     // Start is called before the first frame update
@@ -58,24 +59,16 @@ public class Mesh_Generator : MonoBehaviour
         CreateShape();
         UpdateMesh();
 
-        ///
-            //PUT L-SYSTEM CALLS HERE
-                //Have like 10-ish trees within the bounds of the island (island radius from the center --> xSize/2 & zSize/2)
+        //treeAmnt = 
+        //for(int i = 0, )
 
-            //can get the y values of the terrain from mesh.vertices
-            //mesh.vertices is a 1D array (% by xSize to get the z coordinate)
+        GameObject tree1 = treeScript.MakeTree();
+        tree1.transform.localScale -= new Vector3(.5f, .5f, .5f);
+        tree1.transform.Translate(new Vector3(50, 0, 50));
 
-        //method 1
-        // treeScript.MakeTree(50, 0, 50).transform.localScale -= new Vector3(.5f, .5f, .5f);
-        // treeScript.MakeTree(25, 0, 75).transform.localScale -= new Vector3(.5f, .5f, .5f);
-        // treeScript.MakeTree(125, 0, 160).transform.localScale -= new Vector3(.5f, .5f, .5f);
+        //int treeY = mesh.vertices[50*zSize+50];
 
-        //method 2
-        // Instantiate(treeScript, new Vector3(0, 0, 0), Quaternion.identity).transform.Translate(new Vector3(50, 0, 50));
-        // Instantiate(treeScript, new Vector3(25, 0, 75), Quaternion.identity);
-        // Instantiate(treeScript, new Vector3(125, 0, 160), Quaternion.identity);
-
-        ///
+        
 
 
     }
@@ -83,8 +76,8 @@ public class Mesh_Generator : MonoBehaviour
     //creates the mesh
     void CreateShape()
     {
-        vertices = new Vector3[(xSize + 1) * (zSize + 1)];
-        for(int i = 0, z = 0; z <= zSize; z++)
+        vertices = new Vector3[(xSize + S) * (S + 1)];
+        for(int i = 0, z = 0;Sz <= S; z++)
         {
             for(int x = 0; x <= xSize; x++)
             {
@@ -183,6 +176,10 @@ public class Mesh_Generator : MonoBehaviour
         mesh.triangles = triangles;
 
         mesh.RecalculateNormals(); 
+
+        mesh.RecalculateBounds();
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        meshCollider.sharedMesh = mesh;
     }
 
 
