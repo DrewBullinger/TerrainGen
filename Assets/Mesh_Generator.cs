@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 
@@ -20,8 +21,8 @@ public class Mesh_Generator : MonoBehaviour
     Vector3[] vertices;
     int[] triangles;
 
-    public int xSize = 400;
-    public int zSize = 400;
+    public int xSize = 200;
+    public int zSize = 200;
     public float perlinScaleFactor = 29f;
 
     //This zooms out. A smaller number = more spread out geometry
@@ -29,7 +30,9 @@ public class Mesh_Generator : MonoBehaviour
 
     public int seedOffset;
 
-
+    //This is for diplaying the seed onscreen
+    //public String textValue;
+    public Text textElement;
 
 
     //A good baseline for these variables ^^^ I've found is xSize = 200, zSize = 200, perlinScaleFactor = 20f, perlinZoomFactor = 0.05f
@@ -47,6 +50,9 @@ public class Mesh_Generator : MonoBehaviour
         //Seed not working yet
         int seed = Random.Range(-100000,100000);
         seedOffset = seed;
+
+        textElement.text = "Seed: " + seed.ToString();
+
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
