@@ -23,10 +23,17 @@ public class Mesh_Generator : MonoBehaviour
 
     public int xSize = 200;
     public int zSize = 200;
-    public float perlinScaleFactor = 29f;
+    //public float perlinScaleFactor = 29f;
 
     //This zooms out. A smaller number = more spread out geometry
-    public float perlinZoomFactor = .05f;
+    public float perlinZoomFactor = .04f;
+
+    public int octaves = 4;
+    //persistance needs to be between 0 and 1
+    public float persistance = 0.5f;
+    //lacunarity needs to be one or greater
+    public float lacunarity = 2f;
+
 
     public int seedOffset;
 
@@ -94,10 +101,34 @@ public class Mesh_Generator : MonoBehaviour
             for(int x = 0; x <= xSize; x++)
             {
                 //float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + zOffset) * perlinZoomFactor) * perlinScaleFactor;
-                float y = Mathf.PerlinNoise((x + seedOffset) * perlinZoomFactor , (z + seedOffset) * perlinZoomFactor) * perlinScaleFactor;
+                //float y = Mathf.PerlinNoise((x + seedOffset) * perlinZoomFactor , (z + seedOffset) * perlinZoomFactor) * perlinScaleFactor;
 
-               
-                
+            
+               //amplitude = how much that octave affects the height
+               float amplitude = 10f;
+               //frequency = the scale of the octave
+               float frequency = 1f;
+               //noiseHeight = y value being worken on / "current Y"
+               float noiseHeight = 1f;
+
+               //loop through the octaves
+               for(int o = 0; o < octaves; o++){
+                   float sampleX = (x + seedOffset) * perlinZoomFactor * frequency;
+                   float sampleZ = (z + seedOffset) * perlinZoomFactor * frequency;
+
+                   float perlinValue = Mathf.PerlinNoise(sampleX, sampleZ) * 2 - 1;
+                   noiseHeight += perlinValue * amplitude;
+
+                   amplitude *= persistance;
+                   frequency *= lacunarity;
+               }
+               float y = noiseHeight;
+
+
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //Wobbly Island Edge
+
                 Vector3 center = new Vector3(xSize / 2, .5f, zSize / 2);
                 Vector3 point = new Vector3(x, y, z);
                 float distance = Mathf.Abs(Vector3.Distance(center, point));
@@ -135,6 +166,8 @@ public class Mesh_Generator : MonoBehaviour
                 {
                     y *= scale(islandRadius, 100f, 1f, .01f, distance);
                 }
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
                 vertices[i] = new Vector3(x, y, z);
 

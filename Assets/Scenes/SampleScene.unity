@@ -689,8 +689,10 @@ MonoBehaviour:
   treeScript: {fileID: 0}
   xSize: 200
   zSize: 200
-  perlinScaleFactor: 20
-  perlinZoomFactor: 0.05
+  perlinZoomFactor: 0.04
+  octaves: 4
+  persistance: 0.5
+  lacunarity: 2
   seedOffset: 0
   textElement: {fileID: 1142189282}
 --- !u!23 &2106637244
