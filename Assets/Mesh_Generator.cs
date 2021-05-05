@@ -27,6 +27,10 @@ public class Mesh_Generator : MonoBehaviour
     //This zooms out. A smaller number = more spread out geometry
     public float perlinZoomFactor = .05f;
 
+    public int xOffset, zOffset;
+
+
+
 
     //A good baseline for these variables ^^^ I've found is xSize = 200, zSize = 200, perlinScaleFactor = 20f, perlinZoomFactor = 0.05f
 
@@ -41,8 +45,9 @@ public class Mesh_Generator : MonoBehaviour
     void Start()
     {
         //Seed not working yet
-        //public int seed = Random.Range(-100000,100000);
-        //public int xOffset, zOffset = seed;
+        int seed = Random.Range(-100000,100000);
+        xOffset = seed;
+        zOffset = seed;
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
@@ -84,7 +89,7 @@ public class Mesh_Generator : MonoBehaviour
             for(int x = 0; x <= xSize; x++)
             {
                 //float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + zOffset) * perlinZoomFactor) * perlinScaleFactor;
-                float y = Mathf.PerlinNoise(x * perlinZoomFactor , z * perlinZoomFactor) * perlinScaleFactor;
+                float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + xOffset) * perlinZoomFactor) * perlinScaleFactor;
 
                
                 
