@@ -165,10 +165,24 @@ public class Mesh_Generator : MonoBehaviour
                 if (distance > islandRadius)
                 {
                     y *= scale(islandRadius, 100f, 1f, .01f, distance);
-                    y -= 3;
-                } else
+                    
+                    if (y < 0)
+                    {
+                        y *= 2;
+
+                    }
+                    //y -= 3;
+                } 
+
+                if (distance > 100f)
                 {
-                    y += 7;
+                    if (y > 0)
+                    {
+                        //y *= -2;
+                    } else
+                    {
+                        //y *= 2;
+                    }
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
