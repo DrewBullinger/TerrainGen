@@ -528,10 +528,19 @@ MonoBehaviour:
   treeScript: {fileID: 408809417}
   xSize: 200
   zSize: 200
+<<<<<<< HEAD
   perlinScaleFactor: 20
   perlinZoomFactor: 0.05
   xOffset: 0
   zOffset: 0
+=======
+  perlinZoomFactor: 0.04
+  octaves: 4
+  persistance: 0.5
+  lacunarity: 2
+  seedOffset: 0
+  textElement: {fileID: 1142189282}
+>>>>>>> ExtraPerlinNoise
 --- !u!23 &2106637244
 MeshRenderer:
   m_ObjectHideFlags: 0
