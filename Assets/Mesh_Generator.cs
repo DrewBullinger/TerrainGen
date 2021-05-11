@@ -6,13 +6,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 
 [RequireComponent(typeof(MeshFilter))]
 public class Mesh_Generator : MonoBehaviour
 {
-    public GameObject treeObject;
     public Tree_Generator treeScript;
 
     Mesh mesh;
@@ -23,14 +23,23 @@ public class Mesh_Generator : MonoBehaviour
 
     public int xSize = 200;
     public int zSize = 200;
-    public float perlinScaleFactor = 25f;
+    //public float perlinScaleFactor = 29f;
 
     //This zooms out. A smaller number = more spread out geometry
-    public float perlinZoomFactor = .05f;
+    public float perlinZoomFactor = .04f;
 
-    public int xOffset, zOffset;
+    public int octaves = 4;
+    //persistance needs to be between 0 and 1
+    public float persistance = 0.5f;
+    //lacunarity needs to be one or greater
+    public float lacunarity = 2f;
 
 
+    public int seedOffset;
+
+    //This is for diplaying the seed onscreen
+    //public String textValue;
+    public Text textElement;
 
 
     //A good baseline for these variables ^^^ I've found is xSize = 200, zSize = 200, perlinScaleFactor = 20f, perlinZoomFactor = 0.05f
@@ -39,7 +48,7 @@ public class Mesh_Generator : MonoBehaviour
 
 
     void Awake() {
-        treeScript = treeObject.GetComponent<Tree_Generator>();
+        treeScript = GetComponent<Tree_Generator>();
     }
 
     // Start is called before the first frame update
@@ -47,8 +56,10 @@ public class Mesh_Generator : MonoBehaviour
     {
         //Seed not working yet
         int seed = Random.Range(-100000,100000);
-        xOffset = seed;
-        zOffset = seed;
+        seedOffset = seed;
+
+        textElement.text = "Seed: " + seed.ToString();
+
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
@@ -59,16 +70,24 @@ public class Mesh_Generator : MonoBehaviour
         CreateShape();
         UpdateMesh();
 
-        //treeAmnt = 
-        //for(int i = 0, )
+        ///
+            //PUT L-SYSTEM CALLS HERE
+                //Have like 10-ish trees within the bounds of the island (island radius from the center --> xSize/2 & zSize/2)
 
-        GameObject tree1 = treeScript.MakeTree();
-        tree1.transform.localScale -= new Vector3(.5f, .5f, .5f);
-        tree1.transform.Translate(new Vector3(50, 0, 50));
+            //can get the y values of the terrain from mesh.vertices
+            //mesh.vertices is a 1D array (% by xSize to get the z coordinate)
 
-        //int treeY = mesh.vertices[50*zSize+50];
+        //method 1
+        // treeScript.MakeTree(50, 0, 50).transform.localScale -= new Vector3(.5f, .5f, .5f);
+        // treeScript.MakeTree(25, 0, 75).transform.localScale -= new Vector3(.5f, .5f, .5f);
+        // treeScript.MakeTree(125, 0, 160).transform.localScale -= new Vector3(.5f, .5f, .5f);
 
-        
+        //method 2
+        // Instantiate(treeScript, new Vector3(0, 0, 0), Quaternion.identity).transform.Translate(new Vector3(50, 0, 50));
+        // Instantiate(treeScript, new Vector3(25, 0, 75), Quaternion.identity);
+        // Instantiate(treeScript, new Vector3(125, 0, 160), Quaternion.identity);
+
+        ///
 
 
     }
@@ -76,16 +95,40 @@ public class Mesh_Generator : MonoBehaviour
     //creates the mesh
     void CreateShape()
     {
-        vertices = new Vector3[(xSize + S) * (S + 1)];
-        for(int i = 0, z = 0;Sz <= S; z++)
+        vertices = new Vector3[(xSize + 1) * (zSize + 1)];
+        for(int i = 0, z = 0; z <= zSize; z++)
         {
             for(int x = 0; x <= xSize; x++)
             {
                 //float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + zOffset) * perlinZoomFactor) * perlinScaleFactor;
-                float y = Mathf.PerlinNoise((x + xOffset) * perlinZoomFactor , (z + xOffset) * perlinZoomFactor) * perlinScaleFactor;
+                //float y = Mathf.PerlinNoise((x + seedOffset) * perlinZoomFactor , (z + seedOffset) * perlinZoomFactor) * perlinScaleFactor;
 
-               
-                
+            
+               //amplitude = how much that octave affects the height
+               float amplitude = 10f;
+               //frequency = the scale of the octave
+               float frequency = 1f;
+               //noiseHeight = y value being worken on / "current Y"
+               float noiseHeight = 1f;
+
+               //loop through the octaves
+               for(int o = 0; o < octaves; o++){
+                   float sampleX = (x + seedOffset) * perlinZoomFactor * frequency;
+                   float sampleZ = (z + seedOffset) * perlinZoomFactor * frequency;
+
+                   float perlinValue = Mathf.PerlinNoise(sampleX, sampleZ) * 2 - 1;
+                   noiseHeight += perlinValue * amplitude;
+
+                   amplitude *= persistance;
+                   frequency *= lacunarity;
+               }
+               float y = noiseHeight;
+
+
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //Wobbly Island Edge
+
                 Vector3 center = new Vector3(xSize / 2, .5f, zSize / 2);
                 Vector3 point = new Vector3(x, y, z);
                 float distance = Mathf.Abs(Vector3.Distance(center, point));
@@ -119,10 +162,25 @@ public class Mesh_Generator : MonoBehaviour
 
                 phase += 0.003f;
 
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //Lower outside of the island
                 if (distance > islandRadius)
                 {
                     y *= scale(islandRadius, 100f, 1f, .01f, distance);
+                } 
+
+
+                if(x < 15 || x > 185 || z < 15 || z > 185)
+                {
+                    y *= scale(0, 10f, 0.01f, 0.8f, 10);
+                    if(y > 0.8f){
+                        y *= 0.25f;
+                    }
                 }
+                if((x < 25 || x > 175 || z < 25 || z > 175) && y >0.9) y *= 0.75f;
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
                 vertices[i] = new Vector3(x, y, z);
 
@@ -176,10 +234,6 @@ public class Mesh_Generator : MonoBehaviour
         mesh.triangles = triangles;
 
         mesh.RecalculateNormals(); 
-
-        mesh.RecalculateBounds();
-        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
-        meshCollider.sharedMesh = mesh;
     }
 
 
