@@ -1152,7 +1152,7 @@
     "m_StageCapability": 3,
     "m_Value": {
         "x": 0.0,
-        "y": 0.0
+        "y": 0.1599999964237213
     },
     "m_DefaultValue": {
         "x": 0.0,
@@ -1531,8 +1531,8 @@
     "m_ShaderOutputName": "Center",
     "m_StageCapability": 3,
     "m_Value": {
-        "x": 0.5,
-        "y": 0.5
+        "x": 0.4699999988079071,
+        "y": 0.49000000953674319
     },
     "m_DefaultValue": {
         "x": 0.0,
@@ -1591,8 +1591,8 @@
     "m_ShaderOutputName": "Strength",
     "m_StageCapability": 3,
     "m_Value": {
-        "x": 1.3200000524520875,
-        "y": 0.9900000095367432
+        "x": 0.8500000238418579,
+        "y": 0.9399999976158142
     },
     "m_DefaultValue": {
         "x": 0.0,
@@ -2996,7 +2996,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "Alpha",
     "m_StageCapability": 2,
-    "m_Value": 1.0,
+    "m_Value": 0.5,
     "m_DefaultValue": 1.0,
     "m_Labels": []
 }
