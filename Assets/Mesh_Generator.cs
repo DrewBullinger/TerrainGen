@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -13,10 +14,13 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(MeshFilter))]
 public class Mesh_Generator : MonoBehaviour
 {
+    public GameObject treeObject;
     public Tree_Generator treeScript;
+    Vector3 treeLoc;
 
     Mesh mesh;
     Material landMaterial;
+    Material treeMaterial;
 
     Vector3[] vertices;
     int[] triangles;
@@ -36,6 +40,7 @@ public class Mesh_Generator : MonoBehaviour
 
 
     public int seedOffset;
+    public String seedString;
 
     //This is for diplaying the seed onscreen
     //public String textValue;
@@ -48,53 +53,79 @@ public class Mesh_Generator : MonoBehaviour
 
 
     void Awake() {
-        treeScript = GetComponent<Tree_Generator>();
+        treeScript = treeObject.GetComponent<Tree_Generator>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        //Seed not working yet
         int seed = Random.Range(-100000,100000);
         seedOffset = seed;
+        seedString = seed.ToString();
 
-        textElement.text = "Seed: " + seed.ToString();
-
+        textElement.text = "Seed: " + seedString;
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        //MeshCollider collider = mesh.AddComponent<MeshCollider>();
+        //collider.convex = true;
 
         landMaterial = Resources.Load<Material>("Land_Material");
         GetComponent<MeshRenderer>().material = landMaterial;
-        
+
         CreateShape();
         UpdateMesh();
+        CreateTrees();
+        
+    }
 
-        ///
-            //PUT L-SYSTEM CALLS HERE
-                //Have like 10-ish trees within the bounds of the island (island radius from the center --> xSize/2 & zSize/2)
+    //creates trees
+    void CreateTrees() {
+        treeMaterial = Resources.Load<Material>("Tree_Material");
 
-            //can get the y values of the terrain from mesh.vertices
-            //mesh.vertices is a 1D array (% by xSize to get the z coordinate)
+        int fstDigit;
+        if(seedString.Substring(0,1) == "-") {
+            fstDigit = int.Parse(seedString.Substring(0,2), NumberStyles.AllowLeadingSign);
+        } else {
+            fstDigit = int.Parse(seedString.Substring(0,1));
+        }
 
-        //method 1
-        // treeScript.MakeTree(50, 0, 50).transform.localScale -= new Vector3(.5f, .5f, .5f);
-        // treeScript.MakeTree(25, 0, 75).transform.localScale -= new Vector3(.5f, .5f, .5f);
-        // treeScript.MakeTree(125, 0, 160).transform.localScale -= new Vector3(.5f, .5f, .5f);
+        int treeAmnt = 200 + fstDigit*10;
 
-        //method 2
-        // Instantiate(treeScript, new Vector3(0, 0, 0), Quaternion.identity).transform.Translate(new Vector3(50, 0, 50));
-        // Instantiate(treeScript, new Vector3(25, 0, 75), Quaternion.identity);
-        // Instantiate(treeScript, new Vector3(125, 0, 160), Quaternion.identity);
+        for(int i = 0; i < treeAmnt; i++)
+        {   
+            float treeY = 10;
 
-        ///
+            int treeX = Random.Range(25,175);
+            int treeZ = Random.Range(25,175);
+            
+            float treeScale = Random.Range(.950f, .975f);
+            treeLoc = new Vector3(treeX, treeY, treeZ);
 
+            GameObject tree = treeScript.MakeTree();
+            tree.GetComponent<MeshRenderer>().material = treeMaterial;
+            tree.transform.localScale -= new Vector3(.96f, treeScale, .96f);
+            tree.transform.Translate(treeLoc);
 
+            RaycastHit hit;
+            Vector3 down = transform.TransformDirection(Vector3.down);
+            if(Physics.Raycast (treeLoc, down, out hit)) {
+                var distanceToGround = hit.distance;
+                var newY = treeY-distanceToGround;
+                treeLoc = new Vector3(treeX, newY, treeZ);
+                tree.transform.position = treeLoc;
+            } 
+
+            if(treeLoc.y < 1.7f) {
+                Destroy (tree);
+            }
+
+        }
+    
     }
 
     //creates the mesh
-    void CreateShape()
-    {
+    void CreateShape() {
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
         for(int i = 0, z = 0; z <= zSize; z++)
         {
@@ -232,8 +263,13 @@ public class Mesh_Generator : MonoBehaviour
 
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        
+        mesh.RecalculateBounds();
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        meshCollider.sharedMesh = mesh;
 
         mesh.RecalculateNormals(); 
+
     }
 
 

@@ -694,105 +694,27 @@ public class Tree_Generator : MonoBehaviour {
 	}
 	
 	GameObject CreateMesh(){
-	    if(gvertices.Count>40000){
-            int tempCount = 40000;
-        	while((tempCount % (nbSides * 2+2))!=0){
-        		tempCount--;
-        	}
-       // 	print(tempCount);
-       // 	print(gvertices.Count/tempCount+1);
-        	
-       // 	int splitCount = 
-        	List<List<Vector3>> ggvertices = new List<List<Vector3>>();
-			List<List<Vector3>> ggnormales = new List<List<Vector3>>();
-			List<List<Vector2>> gguvs = new List<List<Vector2>>();
-			List<List<int>> ggtriangles = new List<List<int>>();
+		GameObject plane = new GameObject("Tree");
+		MeshFilter filter = plane.AddComponent<MeshFilter>();
+		Mesh mesh = filter.mesh;
+		mesh.Clear();
 			
-			int maxj = gvertices.Count/tempCount+1;
-			for(int j=0;j<maxj;j++){
-				//print(j);
-				ggvertices.Add(new List<Vector3>());
-				ggnormales.Add(new List<Vector3>());
-				gguvs.Add(new List<Vector2>());
-				ggtriangles.Add(new List<int>());
-			
-			    int mini = j*tempCount;
-			    int maxi = (j+1)*tempCount;
-			    
-			    if(j==maxj-1){
-			    	maxi = gvertices.Count;
-			    }
-			
-				for(int i=mini; i<maxi; i++){
-					ggvertices[j].Add(gvertices[i]);
-					ggnormales[j].Add(gnormales[i]);
-					gguvs[j].Add(guvs[i]);
-				}
-			    
-			    int minTri = j*(3*tempCount - tempCount/(nbSides * 2+2)*nbSides/3);
-				int maxTri = (j+1)*(3*tempCount - tempCount/(nbSides * 2+2)*nbSides/3);
-				
-				if(j==maxj-1){
-			    	maxTri = gtriangles.Count;
-			    }
-			
-				for(int i=minTri; i<maxTri; i++){
-					ggtriangles[j].Add(gtriangles[i]-mini);
-				}
-			
-				GameObject plane = new GameObject("Tree");
-				MeshFilter filter = plane.AddComponent<MeshFilter>();
-				Mesh mesh = filter.mesh;
-				mesh.Clear();
-			
-				mesh.vertices = ggvertices[j].ToArray();
-				mesh.normals = ggnormales[j].ToArray();
-				mesh.uv = gguvs[j].ToArray();
-				mesh.triangles = ggtriangles[j].ToArray();
+		mesh.vertices = gvertices.ToArray();
+		mesh.normals = gnormales.ToArray();
+		mesh.uv = guvs.ToArray();
+		mesh.triangles = gtriangles.ToArray();
  
-				mesh.RecalculateBounds();
-				mesh.Optimize();
+		mesh.RecalculateBounds();
+		mesh.Optimize();
 			
-				MeshRenderer renderer = plane.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-				renderer.material.shader = Shader.Find ("Diffuse");
-				Texture2D tex = new Texture2D(1, 1);
-				tex.SetPixel(0, 0, Color.green);
-				tex.Apply();
-				renderer.material.mainTexture = tex;
-				renderer.material.color = Color.green;
-				
-				
-				return plane;
-			}
+		MeshRenderer renderer = plane.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+		renderer.material.shader = Shader.Find ("Diffuse");
+		Texture2D tex = new Texture2D(1, 50);
+		tex.SetPixel(0, 0, Color.green);
+		tex.Apply();
+		renderer.material.mainTexture = tex;
+		renderer.material.color = Color.green;
 
-        }
-		
-		else{
-			GameObject plane = new GameObject("Tree");
-			MeshFilter filter = plane.AddComponent<MeshFilter>();
-			Mesh mesh = filter.mesh;
-			mesh.Clear();
-			
-			mesh.vertices = gvertices.ToArray();
-			mesh.normals = gnormales.ToArray();
-			mesh.uv = guvs.ToArray();
-			mesh.triangles = gtriangles.ToArray();
- 
-			mesh.RecalculateBounds();
-			mesh.Optimize();
-			
-			MeshRenderer renderer = plane.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-			renderer.material.shader = Shader.Find ("Diffuse");
-			Texture2D tex = new Texture2D(1, 50);
-			tex.SetPixel(0, 0, Color.green);
-			tex.Apply();
-			renderer.material.mainTexture = tex;
-			renderer.material.color = Color.green;
-
-			return plane;
-			
-		}
-
-		return null;
+		return plane;
 	}
 }
