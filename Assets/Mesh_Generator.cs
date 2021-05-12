@@ -90,7 +90,7 @@ public class Mesh_Generator : MonoBehaviour
             fstDigit = int.Parse(seedString.Substring(0,1));
         }
 
-        int treeAmnt = 200 + fstDigit*10;
+        int treeAmnt = 300 + fstDigit*10;
 
         for(int i = 0; i < treeAmnt; i++)
         {   
